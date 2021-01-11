@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cobras e escadas</title>
+</head>
+<body>
+  <div class="content">
+    <h2>Cobras e escadas</h2>
+    <p class="instrucao">Clique nos botões Iniciar para começar o  jogo</p>
+    <button id="iniciar">Iniciar</button>
+  </div>
+  
+
+  <script src="./CobrasEscadas.js"></script>
+  <script>
+
+    const buttonIniciar = document.querySelector('#iniciar');
+    const content = document.querySelector('.content');
+    const instrucao = document.querySelector('.instrucao');
+
+    const cobrasEscadas = new CobrasEscadas();
+    let dado1;
+    let dado2;
+
+    buttonIniciar.addEventListener('click',event => {
+      criarJogadorDom(0);
+      criarJogadorDom(1);
+      criarButtonJogar();
+      criarVezDom();
+      criarDadosResultadoDom();
+    });
+    
+
+    // buttonJogar && buttonJogar.addEventListener('click',event => {
+      
+      
+    //   dado1 = cobrasEscadas.rolarDado();
+    //   dado2 = cobrasEscadas.rolarDado();
+
+    //   cobrasEscadas.jogar(dado1, dado2);
+    // })
+
+    function criarJogadorDom(idJogador){
+      const jogador = document.createElement('p');
+      const labelJogador = document.createElement('strong');
+      
+      labelJogador.innerText = 'Posição do Jogador '+(idJogador+1)+': ';
+      jogador.appendChild(labelJogador);
+
+      const posicaoJogador = document.createElement('span');
+
+      posicaoJogador.setAttribute('id','posicaoJogador'+idJogador);
+      posicaoJogador.innerText = '0';
+      jogador.appendChild(posicaoJogador);
+
+      content.appendChild(jogador);
+      instrucao.innerText = 'Clique em Jogar para rolar os dados'
+      buttonIniciar.remove();
+    }
+
+    function criarButtonJogar(){
+      const buttonJogar = document.createElement('button');
+      
+      buttonJogar.innerText = 'Jogar';
+      buttonJogar.addEventListener('click', onClickJogar)
+      content.appendChild(buttonJogar);
+    }
+
+    function onClickJogar(event){
+      event.preventDefault();
+      dado1 = cobrasEscadas.rolarDado();
+      dado2 = cobrasEscadas.rolarDado();
+      const fimRodada = cobrasEscadas.jogar(dado1, dado2);
+      
+      mudarDadosResultado();
+      mudarPosicaoJogadorDom(0);
+      mudarPosicaoJogadorDom(1);
+      if(fimRodada === 1 ){
+        alert(cobrasEscadas.mensagemFimRodada);
+        document.location.reload();
+      }
+      
+      if(cobrasEscadas.mensagemFimRodada){
+        exibirMensagem(cobrasEscadas.mensagemFimRodada)
+      }
+      if((dado1 === dado2) && fimRodada !== 1) 
+      exibirMensagem(`O jogador ${cobrasEscadas.jogadorAtual+1} tem uma nova jogada`)
+      else cobrasEscadas.trocarJogador();
+      mudarVezDom();
+    }
+
+    function criarVezDom(){
+      cobrasEscadas.sortearJogador();
+      const vezDom = document.createElement('p');
+      
+      vezDom.innerText = 'Vez do jogador '+(cobrasEscadas.jogadorAtual+1);
+      vezDom.setAttribute('id','vez')
+      vezDom.style.color = 'green'; 
+      content.appendChild(vezDom);
+    }
+
+    function criarDadosResultadoDom(){
+      const dadosResultado = document.createElement('p');
+      
+      dadosResultado.innerText = `Resultado: `;
+      dadosResultado.setAttribute('id','dadosResultado')
+      dadosResultado.style.color = 'blue'; 
+      content.appendChild(dadosResultado);
+    }
+
+    function mudarDadosResultado(){
+      const dadosResultado = document.querySelector('#dadosResultado');
+      dadosResultado.innerText = `Resultado: ${dado1} + ${dado2} = ${dado1 + dado2}`
+    }
+
+    function mudarVezDom(){
+      const vezDom = document.querySelector('#vez');
+      vezDom.innerText = 'Vez do jogador '+(cobrasEscadas.jogadorAtual+1);
+    }
+
+    function mudarPosicaoJogadorDom(idJogador){
+      const posJogadorDom = document.querySelector('#posicaoJogador'+idJogador);
+      posJogadorDom.innerText = cobrasEscadas.posicaoJogadores[idJogador];
+    }
+
+    function exibirMensagem(mensagem){
+      setTimeout(()=> {
+        alert(mensagem)
+      },200)
+    }
+  </script>
+</body>
+</html>
